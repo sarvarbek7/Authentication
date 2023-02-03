@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication.Web.Api", "Authentication.Web.Api\Authentication.Web.Api.csproj", "{58465366-8A06-49D8-89D5-C2ADE8FAE4A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication.Web.Api.Infrastucture.Build", "Authentication.Web.Api.Infrastucture.Build\Authentication.Web.Api.Infrastucture.Build.csproj", "{C5D85F5B-8A14-40E2-B83E-0952D4FDB8ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication.Web.Api.Infrastucture.Build", "Authentication.Web.Api.Infrastucture.Build\Authentication.Web.Api.Infrastucture.Build.csproj", "{C5D85F5B-8A14-40E2-B83E-0952D4FDB8ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
