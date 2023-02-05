@@ -22,12 +22,12 @@ namespace Authentication.Web.Api.Models.Users
             set => base.PhoneNumber = value; 
         }
 
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public GenderType Gender { get; set; }
-        public string Mosque { get; set; }
-        public string Profession { get; set; }
-        public string ProfilePictureUrl { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public GenderType? Gender { get; set; }  
+        public string? Mosque { get; set; }
+        public string? Profession { get; set; }
+        public string? ProfilePictureUrl { get; set; }
         public UserStatus Status { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }

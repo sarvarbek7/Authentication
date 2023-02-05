@@ -40,6 +40,7 @@ namespace Authentication.Web.Api
 
             applicationBuilder.UseHttpsRedirection();
             applicationBuilder.UseRouting();
+            applicationBuilder.UseAuthentication();
             applicationBuilder.UseAuthorization();
             applicationBuilder.UseEndpoints(endpoints => endpoints.MapControllers());
         }
