@@ -1,25 +1,23 @@
-var builder = WebApplication.CreateBuilder(args);
+// -------------------------------------------------------
+// Copyright (c) Coalition of the Good-Hearted Engineers
+// FREE TO USE FOR THE WORLD
+// -------------------------------------------------------
 
-// Add services to the container.
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+namespace Authentication.Web.Api
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    public class Program
+    {
+        public static void Main(string[] args) =>
+            CreateHostBuilder(args).Build().Run();
+
+        public static IHostBuilder CreateHostBuilder(string[] arguments)
+        {
+            return Host.CreateDefaultBuilder(arguments)
+                .ConfigureWebHostDefaults(webBuilder =>
+                    webBuilder.UseStartup<Startup>());
+        }
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
