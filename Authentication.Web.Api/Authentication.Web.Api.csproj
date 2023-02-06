@@ -28,11 +28,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Twilio" Version="6.2.2" />
+    <PackageReference Include="Xeption" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="Models\Users\Exceptions\" />
   </ItemGroup>
 
 </Project>

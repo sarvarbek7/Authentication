@@ -3,6 +3,7 @@
 // FREE TO USE FOR THE WORLD
 // -------------------------------------------------------
 
+using System.Linq.Expressions;
 using Authentication.Web.Api.Brokers.DateTimeBroker;
 using Authentication.Web.Api.Brokers.LoggingBroker;
 using Authentication.Web.Api.Brokers.UserManagament;
@@ -10,6 +11,7 @@ using Authentication.Web.Api.Models.Users;
 using Authentication.Web.Api.Services.Foundations.Users;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 {
@@ -49,6 +51,11 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 
         private static DateTimeOffset CreateRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
+        {
+            return actualException => actualException.SameExceptionAs(expectedException);
+        }
 
         private static string CreateRandomPhoneNumber()
         {
