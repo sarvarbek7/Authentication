@@ -83,5 +83,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.userManagementBrokerMock.VerifyNoOtherCalls();
         }
+
+
     }
 }

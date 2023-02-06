@@ -14,7 +14,7 @@ namespace Authentication.Web.Api.Services.Foundations.Users
         private void ValidateUserOnRegister(User user)
         {
             ValidateUserNotNull(user);
-            //ValidateUserId(user.Id);
+            ValidateUserId(user.Id);
         }
 
         private void ValidateUserNotNull(User user)
@@ -25,14 +25,14 @@ namespace Authentication.Web.Api.Services.Foundations.Users
             }
         }
 
-        //private void ValidateUserId(Guid userId)
-        //{
-        //    if (userId == default)
-        //    {
-        //        throw new InvalidUserException(
-        //            parameterName: nameof(User.Id),
-        //            parameterValue: userId);
-        //    }
-        //}
+        private void ValidateUserId(Guid userId)
+        {
+            if (userId == default)
+            {
+                throw new InvalidUserException(
+                    parameterName: nameof(User.Id),
+                    parameterValue: userId);
+            }
+        }
     }
 }
