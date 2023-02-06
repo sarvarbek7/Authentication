@@ -30,6 +30,8 @@ namespace Authentication.Web.Api.Services.Foundations.Users
         public ValueTask<User> RegisterUserAsync(User user) =>
             TryCatch(async () =>
             {
+                ValidateUserOnRegister(user);
+                
                 return await this.userManagementBroker.InsertUserAsync(user);
             });
     }

@@ -7,6 +7,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Authentication.Web.Api.Models.Users;
+using Authentication.Web.Api.Models.Users.Exceptions;
+using Xeptions;
 
 namespace Authentication.Web.Api.Services.Foundations.Users
 {
@@ -21,10 +23,18 @@ namespace Authentication.Web.Api.Services.Foundations.Users
             {
                 return await returningUserFunction();
             }
-            catch
+            catch (NullUserException nullUserException)
             {
-                throw new Exception(message: "Something wrong");
+                throw CreateAndLogValidationException(nullUserException);
             }
+        }
+
+        private UserValidationException CreateAndLogValidationException(Xeption innerException)
+        {
+            var userValidationException = new UserValidationException(innerException);
+            this.loggingBroker.LogError(userValidationException);
+
+            return userValidationException;
         }
     }
 }
