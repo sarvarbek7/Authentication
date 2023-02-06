@@ -18,10 +18,10 @@ namespace Authentication.Web.Api.Brokers.UserManagament
             this.userManager = userManager;
         }
 
-        public async ValueTask<User> InsertUserAsync(User user, string password)
+        public async ValueTask<User> InsertUserAsync(User user)
         {
             var broker = new UserManagementBroker(this.userManager);
-            await broker.userManager.CreateAsync(user, password);
+            await broker.userManager.CreateAsync(user);
 
             return user;
         }

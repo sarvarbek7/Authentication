@@ -2,17 +2,21 @@
 // Copyright (c) Coalition of the Good-Hearted Engineers
 // FREE TO USE FOR THE WORLD
 // -------------------------------------------------------
+using System;
+using System.Text;
 using Authentication.Web.Api.Brokers.DateTimeBroker;
 using Authentication.Web.Api.Brokers.LoggingBroker;
 using Authentication.Web.Api.Brokers.StorageBroker;
 using Authentication.Web.Api.Brokers.UserManagament;
 using Authentication.Web.Api.Models.Users;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace Authentication.Web.Api
@@ -69,6 +73,24 @@ namespace Authentication.Web.Api
                     }
                     );
             });
+
+            //services
+            //    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //    .AddJwtBearer(options =>
+            //    {
+            //        options.TokenValidationParameters = new TokenValidationParameters()
+            //        {
+            //            ClockSkew = TimeSpan.Zero,
+            //            ValidateIssuer = true,
+            //            ValidateAudience = true,
+            //            ValidateLifetime = true,
+            //            ValidateIssuerSigningKey = true,
+            //            ValidIssuer = "apiWithAuthBackend",
+            //            ValidAudience = "apiWithAuthBackend",
+            //            IssuerSigningKey = new SymmetricSecurityKey(
+            //                Encoding.UTF8.GetBytes("!SomethingSecret!"))
+            //        };
+            //    });
         }
 
         private static void AddBrokers(IServiceCollection services)
