@@ -3,6 +3,7 @@
 // FREE TO USE FOR THE WORLD
 // -------------------------------------------------------
 
+using System;
 using Authentication.Web.Api.Models.Users;
 using Authentication.Web.Api.Models.Users.Exceptions;
 
@@ -13,7 +14,9 @@ namespace Authentication.Web.Api.Services.Foundations.Users
         private void ValidateUserOnRegister(User user)
         {
             ValidateUserNotNull(user);
+            //ValidateUserId(user.Id);
         }
+
         private void ValidateUserNotNull(User user)
         {
             if (user == null)
@@ -21,5 +24,15 @@ namespace Authentication.Web.Api.Services.Foundations.Users
                 throw new NullUserException();
             }
         }
+
+        //private void ValidateUserId(Guid userId)
+        //{
+        //    if (userId == default)
+        //    {
+        //        throw new InvalidUserException(
+        //            parameterName: nameof(User.Id),
+        //            parameterValue: userId);
+        //    }
+        //}
     }
 }
