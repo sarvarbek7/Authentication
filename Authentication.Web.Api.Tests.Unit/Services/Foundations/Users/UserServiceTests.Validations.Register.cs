@@ -3,6 +3,7 @@
 // FREE TO USE FOR THE WORLD
 // -------------------------------------------------------
 
+using Authentication.Web.Api.Models;
 using Authentication.Web.Api.Models.Users;
 using Authentication.Web.Api.Models.Users.Exceptions;
 using Moq;
@@ -84,6 +85,80 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             this.userManagementBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public async void ShouldThrowValidationExceptionOnRegisterIfUserIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            var invalidUser = new User
+            {
+                FirstName = invalidText,
+                LastName = invalidText,
+            };
 
+            var invalidUserException = 
+                new InvalidUserException();
+
+            invalidUserException.AddData(
+                key: nameof(User.Id),
+                values: "ID is required");
+
+            invalidUserException.AddData(
+                key: nameof(User.PhoneNumber),
+                values: "Text is required");
+
+            invalidUserException.AddData(
+                key: nameof(User.FirstName),
+                values: "Text is required");
+
+            invalidUserException.AddData(
+                key: nameof(User.LastName),
+                values: "Text is required");
+
+            invalidUserException.AddData(
+                key: nameof(User.Mosque),
+                values: "Text is required");
+
+            invalidUserException.AddData(
+                key: nameof(User.Profession),
+                values: "Text is required");
+
+            invalidUserException.AddData(
+                key: nameof(User.Mosque),
+                values: "Text is required");
+
+            invalidUserException.AddData(
+                key: nameof(User.CreatedDate),
+                values: "Date is required");
+
+            invalidUserException.AddData(
+                key: nameof(User.UpdatedDate),
+                values: "Date is required");
+
+            var expectedUserValidationException =
+                new UserValidationException(invalidUserException);
+
+            // when
+            ValueTask<User> registerUserTask =
+                this.userService.RegisterUserAsync(invalidUser);
+
+            // then
+            await Assert.ThrowsAsync<UserValidationException>(() =>
+                registerUserTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedUserValidationException))),
+                Times.Once);
+
+            this.userManagementBrokerMock.Verify(broker =>
+                broker.InsertUserAsync(It.IsAny<User>()),
+                Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.userManagementBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
