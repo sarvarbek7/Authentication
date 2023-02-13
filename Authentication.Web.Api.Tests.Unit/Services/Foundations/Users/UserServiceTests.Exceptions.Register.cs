@@ -7,6 +7,7 @@ using Authentication.Web.Api.Models.Users;
 using Authentication.Web.Api.Models.Users.Exceptions;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 
@@ -78,6 +79,38 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(expectedUserDependencyValidationException))),
+                Times.Once);
+
+            this.userManagementBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowDependenyExceptionOnRegisterIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDate = CreateRandomDateTime();
+            User randomUser = CreateRandomUser(dates: randomDate);
+            User inputUser = randomUser;
+            DbUpdateException dbUpdateException = new DbUpdateException();
+            var failedStorageException = new FailedStorageException(dbUpdateException);
+            var expectedUserDependencyException = new UserDependencyException(failedStorageException);
+
+            userManagementBrokerMock.Setup(broker =>
+                broker.InsertUserAsync(inputUser)).ThrowsAsync(dbUpdateException);
+
+            // when
+            ValueTask<User> registerUserTask = this.userService.RegisterUserAsync(inputUser);
+
+            // then
+            await Assert.ThrowsAsync<UserDependencyException>(() => 
+                registerUserTask.AsTask());
+
+            this.userManagementBrokerMock.Verify(broker =>
+                broker.InsertUserAsync(inputUser), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedUserDependencyException))),
                 Times.Once);
 
             this.userManagementBrokerMock.VerifyNoOtherCalls();

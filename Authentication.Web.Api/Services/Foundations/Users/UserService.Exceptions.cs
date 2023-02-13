@@ -34,6 +34,13 @@ namespace Authentication.Web.Api.Services.Foundations.Users
             {
                 throw CreateAndLogValidationException(invalidUserException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedStorageException = 
+                    new FailedStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedStorageException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsUserException = 
@@ -41,12 +48,12 @@ namespace Authentication.Web.Api.Services.Foundations.Users
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsUserException);
             }
-            catch (SqlException sqlException)
+            catch (DbUpdateException dbUpdateException)
             {
                 var failedStorageException = 
-                    new FailedStorageException(sqlException);
+                    new FailedStorageException(dbUpdateException);
 
-                throw CreateAndLogCriticalDependencyException(failedStorageException);
+                throw CreateAndLogDependencyException(failedStorageException);
             }
         }
 
@@ -62,6 +69,14 @@ namespace Authentication.Web.Api.Services.Foundations.Users
         {
             var userDependencyException = new UserDependencyException(innerException);
             this.loggingBroker.LogCritical(userDependencyException);
+
+            return userDependencyException;
+        }
+
+        private UserDependencyException CreateAndLogDependencyException(Xeption innerException)
+        {
+            var userDependencyException = new UserDependencyException(innerException);
+            this.loggingBroker.LogError(userDependencyException);
 
             return userDependencyException;
         }
