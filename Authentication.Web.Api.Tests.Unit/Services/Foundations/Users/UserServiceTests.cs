@@ -74,5 +74,8 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 
         private static SqlException GetSqlException() =>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
+        private static string GetRandomMessage() =>
+            new MnemonicString().GetValue();
     }
 }
