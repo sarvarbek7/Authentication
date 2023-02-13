@@ -44,6 +44,8 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
                 PhoneNumber = CreateRandomPhoneNumber(),
                 FirstName = new Filler<RealNames>().Create().ToString(),
                 LastName = new Filler<RealNames>().Create().ToString(),
+                Mosque = new Filler<String>().Create().ToString(),
+                Profession = new Filler<String>().Create().ToString(),
                 CreatedDate = dates,
                 UpdatedDate = dates
             };
@@ -62,7 +64,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
         private static string CreateRandomPhoneNumber()
         {
             var random = new Random();
-            string code = "+998";
+            string code = "+9989";
             int number = random.Next(0, 100_000_000);
             number.ToString("D9");
             string phonenumber = code + number;
