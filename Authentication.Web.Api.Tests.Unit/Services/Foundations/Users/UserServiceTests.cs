@@ -4,11 +4,13 @@
 // -------------------------------------------------------
 
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Authentication.Web.Api.Brokers.DateTimeBroker;
 using Authentication.Web.Api.Brokers.LoggingBroker;
 using Authentication.Web.Api.Brokers.UserManagament;
 using Authentication.Web.Api.Models.Users;
 using Authentication.Web.Api.Services.Foundations.Users;
+using Microsoft.Data.SqlClient;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -60,12 +62,15 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
         private static string CreateRandomPhoneNumber()
         {
             var random = new Random();
-            string code = "+9989";
+            string code = "+998";
             int number = random.Next(0, 100_000_000);
             number.ToString("D9");
             string phonenumber = code + number;
 
             return phonenumber;
         }
+
+        private static SqlException GetSqlException() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
     }
 }
