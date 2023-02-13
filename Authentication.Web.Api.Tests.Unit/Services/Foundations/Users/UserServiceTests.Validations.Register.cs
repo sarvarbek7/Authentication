@@ -3,7 +3,6 @@
 // FREE TO USE FOR THE WORLD
 // -------------------------------------------------------
 
-using Authentication.Web.Api.Models;
 using Authentication.Web.Api.Models.Users;
 using Authentication.Web.Api.Models.Users.Exceptions;
 using Moq;
@@ -74,7 +73,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedUserValidationException))),
-                        Times.Once);
+                        Times.Once());
 
             this.userManagementBrokerMock.Verify(broker =>
                 broker.InsertUserAsync(It.IsAny<User>()),
@@ -95,16 +94,13 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             // given
             var invalidUser = new User
             {
+                Id= Guid.NewGuid(),
                 FirstName = invalidText,
                 LastName = invalidText,
             };
 
             var invalidUserException = 
                 new InvalidUserException();
-
-            invalidUserException.AddData(
-                key: nameof(User.Id),
-                values: "ID is required");
 
             invalidUserException.AddData(
                 key: nameof(User.PhoneNumber),
@@ -124,10 +120,6 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 
             invalidUserException.AddData(
                 key: nameof(User.Profession),
-                values: "Text is required");
-
-            invalidUserException.AddData(
-                key: nameof(User.Mosque),
                 values: "Text is required");
 
             invalidUserException.AddData(
