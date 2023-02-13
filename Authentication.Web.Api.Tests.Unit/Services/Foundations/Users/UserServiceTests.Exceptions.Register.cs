@@ -22,16 +22,16 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             DateTimeOffset dateTime = CreateRandomDateTime();
             User someUser = CreateRandomUser(dates: dateTime);
             SqlException sqlException = GetSqlException();
-            var failedStorageException = new FailedStorageException(sqlException);
-            
-            var expectedUserDependencyException = 
+            var failedStorageException = new FailedUserStorageException(sqlException);
+
+            var expectedUserDependencyException =
                 new UserDependencyException(failedStorageException);
 
             userManagementBrokerMock.Setup(broker =>
                 broker.InsertUserAsync(someUser)).ThrowsAsync(sqlException);
 
             // when
-            ValueTask<User> registerUserTask = 
+            ValueTask<User> registerUserTask =
                 this.userService.RegisterUserAsync(someUser);
 
             // then
@@ -42,7 +42,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
                 broker.InsertUserAsync(someUser), Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is(SameExceptionAs(expectedUserDependencyException))), 
+                broker.LogCritical(It.Is(SameExceptionAs(expectedUserDependencyException))),
                 Times.Once);
 
             this.userManagementBrokerMock.VerifyNoOtherCalls();
@@ -57,8 +57,8 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             User randomUser = CreateRandomUser(dates: randomDate);
             User inputUser = randomUser;
             var duplicateKeyException = new DuplicateKeyException(message: GetRandomMessage());
-            
-            var alreadyExistsUserException = 
+
+            var alreadyExistsUserException =
                 new AlreadyExistsUserException(duplicateKeyException);
 
             var expectedUserDependencyValidationException =
@@ -93,7 +93,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             User randomUser = CreateRandomUser(dates: randomDate);
             User inputUser = randomUser;
             DbUpdateException dbUpdateException = new DbUpdateException();
-            var failedStorageException = new FailedStorageException(dbUpdateException);
+            var failedStorageException = new FailedUserStorageException(dbUpdateException);
             var expectedUserDependencyException = new UserDependencyException(failedStorageException);
 
             userManagementBrokerMock.Setup(broker =>
@@ -103,7 +103,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             ValueTask<User> registerUserTask = this.userService.RegisterUserAsync(inputUser);
 
             // then
-            await Assert.ThrowsAsync<UserDependencyException>(() => 
+            await Assert.ThrowsAsync<UserDependencyException>(() =>
                 registerUserTask.AsTask());
 
             this.userManagementBrokerMock.Verify(broker =>
@@ -111,6 +111,41 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(expectedUserDependencyException))),
+                Times.Once);
+
+            this.userManagementBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowServiceExceptionOnRegisterIfErrorOccursAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDate = CreateRandomDateTime();
+            User randomUser = CreateRandomUser(dates: randomDate);
+            User inputUser = randomUser;
+            var exception = new Exception();
+            var failedStorageException = new FailedUserStorageException(exception);
+            
+            var expectedUserServiceException = 
+                new UserServiceException(failedStorageException);
+
+            userManagementBrokerMock.Setup(broker =>
+                broker.InsertUserAsync(inputUser)).ThrowsAsync(exception);
+
+            // when
+            ValueTask<User> registerUserTask = 
+                this.userService.RegisterUserAsync(inputUser);
+
+            // then
+            await Assert.ThrowsAsync<UserServiceException>(() =>
+                registerUserTask.AsTask());
+
+            this.userManagementBrokerMock.Verify(broker =>
+                broker.InsertUserAsync(inputUser), Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedUserServiceException))),
                 Times.Once);
 
             this.userManagementBrokerMock.VerifyNoOtherCalls();

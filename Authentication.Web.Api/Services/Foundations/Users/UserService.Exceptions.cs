@@ -37,7 +37,7 @@ namespace Authentication.Web.Api.Services.Foundations.Users
             catch (SqlException sqlException)
             {
                 var failedStorageException = 
-                    new FailedStorageException(sqlException);
+                    new FailedUserStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedStorageException);
             }
@@ -51,7 +51,7 @@ namespace Authentication.Web.Api.Services.Foundations.Users
             catch (DbUpdateException dbUpdateException)
             {
                 var failedStorageException = 
-                    new FailedStorageException(dbUpdateException);
+                    new FailedUserStorageException(dbUpdateException);
 
                 throw CreateAndLogDependencyException(failedStorageException);
             }

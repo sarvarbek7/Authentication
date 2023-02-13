@@ -3,16 +3,14 @@
 // FREE TO USE FOR THE WORLD
 // -------------------------------------------------------
 
-using System;
 using Xeptions;
 
 namespace Authentication.Web.Api.Models.Users.Exceptions
 {
-    public class FailedStorageException : Xeption
+    public class UserServiceException : Xeption
     {
-        public FailedStorageException(Exception innerException)
-            : base(message: "Failed Storage error occured, please contact support",
-                  innerException)
-        { }
+        public UserServiceException(Xeption innerException) 
+            : base(message: "User service error occured, please contact support",
+                  innerException) { }
     }
 }
