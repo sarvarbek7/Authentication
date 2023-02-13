@@ -125,10 +125,10 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             User randomUser = CreateRandomUser(dates: randomDate);
             User inputUser = randomUser;
             var exception = new Exception();
-            var failedStorageException = new FailedUserStorageException(exception);
+            var failedUserServiceException = new FailedUserServiceException(exception);
             
             var expectedUserServiceException = 
-                new UserServiceException(failedStorageException);
+                new UserServiceException(failedUserServiceException);
 
             userManagementBrokerMock.Setup(broker =>
                 broker.InsertUserAsync(inputUser)).ThrowsAsync(exception);

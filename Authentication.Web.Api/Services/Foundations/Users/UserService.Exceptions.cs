@@ -55,6 +55,13 @@ namespace Authentication.Web.Api.Services.Foundations.Users
 
                 throw CreateAndLogDependencyException(failedStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedUserServiceException = 
+                    new FailedUserServiceException(exception);
+
+                throw CreateAndLogServiceException(failedUserServiceException);
+            }
         }
 
         private UserValidationException CreateAndLogValidationException(Xeption innerException)
@@ -87,6 +94,14 @@ namespace Authentication.Web.Api.Services.Foundations.Users
             this.loggingBroker.LogError(userDependencyValidationException);
 
             return userDependencyValidationException;
+        }
+
+        private UserServiceException CreateAndLogServiceException(Xeption innerException)
+        {
+            var userServiceException = new UserServiceException(innerException);
+            this.loggingBroker.LogError(userServiceException);
+
+            return userServiceException;
         }
     }
 }
