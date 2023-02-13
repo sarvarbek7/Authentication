@@ -8,7 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Authentication.Web.Api.Models.Users;
 using Authentication.Web.Api.Models.Users.Exceptions;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace Authentication.Web.Api.Services.Foundations.Users
@@ -31,6 +33,13 @@ namespace Authentication.Web.Api.Services.Foundations.Users
             catch (InvalidUserException invalidUserException)
             {
                 throw CreateAndLogValidationException(invalidUserException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsUserException = 
+                    new AlreadyExistsUserException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsUserException);
             }
             catch (SqlException sqlException)
             {
@@ -55,6 +64,14 @@ namespace Authentication.Web.Api.Services.Foundations.Users
             this.loggingBroker.LogCritical(userDependencyException);
 
             return userDependencyException;
+        }
+
+        private UserDependencyValidationException CreateAndLogDependencyValidationException(Xeption innerException)
+        {
+            var userDependencyValidationException = new UserDependencyValidationException(innerException);
+            this.loggingBroker.LogError(userDependencyValidationException);
+
+            return userDependencyValidationException;
         }
     }
 }
