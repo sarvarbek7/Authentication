@@ -7,6 +7,7 @@ using Authentication.Web.Api.Brokers.LoggingBroker;
 using Authentication.Web.Api.Brokers.StorageBroker;
 using Authentication.Web.Api.Brokers.UserManagament;
 using Authentication.Web.Api.Models.Users;
+using Authentication.Web.Api.Services.Foundations.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -23,33 +24,13 @@ namespace Authentication.Web.Api
         public Startup(IConfiguration configuration) =>
             Configuration = configuration;
 
-        public static void Configure(
-            IApplicationBuilder applicationBuilder, 
-            IWebHostEnvironment webHostEnvironment)
-        {
-            if(webHostEnvironment.IsDevelopment())
-            {
-                applicationBuilder.UseDeveloperExceptionPage();
-                applicationBuilder.UseSwagger();
-
-                applicationBuilder.UseSwaggerUI(options =>
-                    options.SwaggerEndpoint(
-                        url: "/swagger/v1/swagger.json",
-                        name: "Authentication.Web.Api v1"));
-            }
-
-            applicationBuilder.UseHttpsRedirection();
-            applicationBuilder.UseRouting();
-            applicationBuilder.UseAuthorization();
-            applicationBuilder.UseEndpoints(endpoints => endpoints.MapControllers());
-        }
-
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
             services.AddLogging();
             services.AddDbContext<StorageBroker>();
             AddBrokers(services);
+            AddFoundationServices(services);
             services.AddDataProtection();
 
             services.AddIdentityCore<User>()
@@ -68,16 +49,44 @@ namespace Authentication.Web.Api
                     }
                     );
             });
+
+            services.AddAuthentication();
+            services.AddAuthorization();
+        }
+
+        public static void Configure(
+            IApplicationBuilder applicationBuilder, 
+            IWebHostEnvironment webHostEnvironment)
+        {
+            if(webHostEnvironment.IsDevelopment())
+            {
+                applicationBuilder.UseDeveloperExceptionPage();
+                applicationBuilder.UseSwagger();
+
+                applicationBuilder.UseSwaggerUI(options =>
+                    options.SwaggerEndpoint(
+                        url: "/swagger/v1/swagger.json",
+                        name: "Authentication.Web.Api v1"));
+            }
+
+            applicationBuilder.UseHttpsRedirection();
+            applicationBuilder.UseRouting();
+            applicationBuilder.UseAuthentication();
+            applicationBuilder.UseAuthorization();
+            applicationBuilder.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 
         private static void AddBrokers(IServiceCollection services)
         {
             services.AddScoped<IUserManagementBroker, UserManagementBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddScoped<IStorageBroker, StorageBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
         }
 
-
+        private static void AddFoundationServices(IServiceCollection services)
+        {
+            services.AddTransient<IUserService, UserService>();
+        }
     }
 }
