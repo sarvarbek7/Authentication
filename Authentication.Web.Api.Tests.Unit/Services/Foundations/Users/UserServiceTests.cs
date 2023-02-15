@@ -66,7 +66,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             var random = new Random();
             string code = "+9989";
             int number = random.Next(0, 100_000_000);
-            number.ToString("D9");
+            number.ToString("D8");
             string phonenumber = code + number;
 
             return phonenumber;
@@ -77,5 +77,14 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 
         private static string GetRandomMessage() =>
             new MnemonicString().GetValue();
+
+        private static string CreateRandomPassword()
+        {
+            var random = new Random();
+            int number = random.Next(0, 1_000_000);
+            
+
+            return number.ToString("D6");
+        }
     }
 }

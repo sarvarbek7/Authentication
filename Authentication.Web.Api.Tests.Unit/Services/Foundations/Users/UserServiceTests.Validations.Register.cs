@@ -17,7 +17,8 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
         {
             // given
             User invalidUser = null;
-
+            string randomPassword = CreateRandomPassword();
+            string password = randomPassword;
             var nullUserException = new NullUserException();
 
             var expectedUserValidationException =
@@ -25,7 +26,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 
             // when
             ValueTask<User> createUserTask =
-                this.userService.RegisterUserAsync(invalidUser);
+                this.userService.RegisterUserAsync(invalidUser, password);
 
             // then
             await Assert.ThrowsAsync<UserValidationException>(() =>
@@ -37,7 +38,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
                         Times.Once);
 
             this.userManagementBrokerMock.Verify(broker =>
-                broker.InsertUserAsync(It.IsAny<User>()),
+                broker.InsertUserAsync(It.IsAny<User>(), It.IsAny<string>()),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -51,6 +52,8 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             // given
             DateTimeOffset randomDateTime = CreateRandomDateTime();
             DateTimeOffset dateTime = randomDateTime;
+            string randomPassword = CreateRandomPassword();
+            string password = randomPassword;
             User randomUser = CreateRandomUser(dates: dateTime);
             User inputUser = randomUser;
             inputUser.Id = default;
@@ -64,7 +67,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 
             // when
             ValueTask<User> registerUserTask =
-                this.userService.RegisterUserAsync(inputUser);
+                this.userService.RegisterUserAsync(inputUser, password);
 
             // then
             await Assert.ThrowsAsync<UserValidationException>(() =>
@@ -76,7 +79,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
                         Times.Once());
 
             this.userManagementBrokerMock.Verify(broker =>
-                broker.InsertUserAsync(It.IsAny<User>()),
+                broker.InsertUserAsync(It.IsAny<User>(), It.IsAny<string>()),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -92,6 +95,8 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             string invalidText)
         {
             // given
+            string randomPassword = CreateRandomPassword();
+            string password = randomPassword;
             var invalidUser = new User
             {
                 Id= Guid.NewGuid(),
@@ -135,7 +140,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
 
             // when
             ValueTask<User> registerUserTask =
-                this.userService.RegisterUserAsync(invalidUser);
+                this.userService.RegisterUserAsync(invalidUser, password);
 
             // then
             await Assert.ThrowsAsync<UserValidationException>(() =>
@@ -146,7 +151,7 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
                 Times.Once);
 
             this.userManagementBrokerMock.Verify(broker =>
-                broker.InsertUserAsync(It.IsAny<User>()),
+                broker.InsertUserAsync(It.IsAny<User>(), It.IsAny<string>()),
                 Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

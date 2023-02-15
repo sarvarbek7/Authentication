@@ -20,6 +20,8 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
         {
             // given
             DateTimeOffset dateTime = CreateRandomDateTime();
+            string randomPassword = CreateRandomPassword();
+            string password = randomPassword;
             User someUser = CreateRandomUser(dates: dateTime);
             SqlException sqlException = GetSqlException();
             var failedStorageException = new FailedUserStorageException(sqlException);
@@ -28,18 +30,18 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
                 new UserDependencyException(failedStorageException);
 
             userManagementBrokerMock.Setup(broker =>
-                broker.InsertUserAsync(someUser)).ThrowsAsync(sqlException);
+                broker.InsertUserAsync(someUser, password)).ThrowsAsync(sqlException);
 
             // when
             ValueTask<User> registerUserTask =
-                this.userService.RegisterUserAsync(someUser);
+                this.userService.RegisterUserAsync(someUser, password);
 
             // then
             await Assert.ThrowsAsync<UserDependencyException>(() =>
                 registerUserTask.AsTask());
 
             this.userManagementBrokerMock.Verify(broker =>
-                broker.InsertUserAsync(someUser), Times.Once);
+                broker.InsertUserAsync(someUser, password), Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(expectedUserDependencyException))),
@@ -55,6 +57,8 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             // given
             DateTimeOffset randomDate = CreateRandomDateTime();
             User randomUser = CreateRandomUser(dates: randomDate);
+            string randomPassword = CreateRandomPassword();
+            string password = randomPassword;
             User inputUser = randomUser;
             var duplicateKeyException = new DuplicateKeyException(message: GetRandomMessage());
 
@@ -65,17 +69,17 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
                 new UserDependencyValidationException(alreadyExistsUserException);
 
             userManagementBrokerMock.Setup(broker =>
-                broker.InsertUserAsync(inputUser)).ThrowsAsync(duplicateKeyException);
+                broker.InsertUserAsync(inputUser, password)).ThrowsAsync(duplicateKeyException);
 
             // when
-            ValueTask<User> registerUserTask = this.userService.RegisterUserAsync(inputUser);
+            ValueTask<User> registerUserTask = this.userService.RegisterUserAsync(inputUser, password);
 
             // then
             await Assert.ThrowsAsync<UserDependencyValidationException>(() =>
                 registerUserTask.AsTask());
 
             this.userManagementBrokerMock.Verify(broker =>
-                broker.InsertUserAsync(inputUser), Times.Once);
+                broker.InsertUserAsync(inputUser, password), Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(expectedUserDependencyValidationException))),
@@ -91,23 +95,25 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             // given
             DateTimeOffset randomDate = CreateRandomDateTime();
             User randomUser = CreateRandomUser(dates: randomDate);
+            string randomPassword = CreateRandomPassword();
+            string password = randomPassword;
             User inputUser = randomUser;
             DbUpdateException dbUpdateException = new DbUpdateException();
             var failedStorageException = new FailedUserStorageException(dbUpdateException);
             var expectedUserDependencyException = new UserDependencyException(failedStorageException);
 
             userManagementBrokerMock.Setup(broker =>
-                broker.InsertUserAsync(inputUser)).ThrowsAsync(dbUpdateException);
+                broker.InsertUserAsync(inputUser, password)).ThrowsAsync(dbUpdateException);
 
             // when
-            ValueTask<User> registerUserTask = this.userService.RegisterUserAsync(inputUser);
+            ValueTask<User> registerUserTask = this.userService.RegisterUserAsync(inputUser, password);
 
             // then
             await Assert.ThrowsAsync<UserDependencyException>(() =>
                 registerUserTask.AsTask());
 
             this.userManagementBrokerMock.Verify(broker =>
-                broker.InsertUserAsync(inputUser), Times.Once);
+                broker.InsertUserAsync(inputUser, password), Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(expectedUserDependencyException))),
@@ -123,6 +129,8 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             // given
             DateTimeOffset randomDate = CreateRandomDateTime();
             User randomUser = CreateRandomUser(dates: randomDate);
+            string randomPassword = CreateRandomPassword();
+            string password = randomPassword;
             User inputUser = randomUser;
             var exception = new Exception();
             var failedUserServiceException = new FailedUserServiceException(exception);
@@ -131,18 +139,18 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
                 new UserServiceException(failedUserServiceException);
 
             userManagementBrokerMock.Setup(broker =>
-                broker.InsertUserAsync(inputUser)).ThrowsAsync(exception);
+                broker.InsertUserAsync(inputUser, password)).ThrowsAsync(exception);
 
             // when
             ValueTask<User> registerUserTask = 
-                this.userService.RegisterUserAsync(inputUser);
+                this.userService.RegisterUserAsync(inputUser, password);
 
             // then
             await Assert.ThrowsAsync<UserServiceException>(() =>
                 registerUserTask.AsTask());
 
             this.userManagementBrokerMock.Verify(broker =>
-                broker.InsertUserAsync(inputUser), Times.Once);
+                broker.InsertUserAsync(inputUser, password), Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(expectedUserServiceException))),

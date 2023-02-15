@@ -22,6 +22,11 @@ namespace Authentication.Web.Api.Models.Users
             set => base.PhoneNumber = value; 
         }
 
+        public override string UserName 
+        {
+            get => base.PhoneNumber; 
+            set => base.PhoneNumber = value;
+        }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public GenderType Gender { get; set; }  

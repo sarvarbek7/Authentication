@@ -18,29 +18,26 @@ namespace Authentication.Web.Api.Tests.Unit.Services.Foundations.Users
             // given
             DateTimeOffset randomDateTime = CreateRandomDateTime();
             DateTimeOffset dateTime= randomDateTime;
+            string randomPassword = CreateRandomPassword();
+            string password = randomPassword;
             User randomUser = CreateRandomUser(dates: dateTime);
             User inputUser = randomUser;
             User storageUser = randomUser;
             User expectedUser= storageUser;
 
             this.userManagementBrokerMock.Setup(broker =>
-                broker.InsertUserAsync(inputUser))
+                broker.InsertUserAsync(inputUser, password))
                     .ReturnsAsync(storageUser);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTime()).Returns(randomDateTime);
             // when
             User actualUser = 
-                await this.userService.RegisterUserAsync(inputUser);
+                await this.userService.RegisterUserAsync(inputUser, password);
 
             // then
             actualUser.Should().BeEquivalentTo(expectedUser);
 
             this.userManagementBrokerMock.Verify(broker => 
-                broker.InsertUserAsync(inputUser), Times.Once());
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTime(), Times.Once());
+                broker.InsertUserAsync(inputUser, password), Times.Once());
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.userManagementBrokerMock.VerifyNoOtherCalls();

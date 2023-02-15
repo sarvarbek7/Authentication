@@ -2,21 +2,18 @@
 // Copyright (c) Coalition of the Good-Hearted Engineers
 // FREE TO USE FOR THE WORLD
 // -------------------------------------------------------
-using System;
-using System.Text;
 using Authentication.Web.Api.Brokers.DateTimeBroker;
 using Authentication.Web.Api.Brokers.LoggingBroker;
 using Authentication.Web.Api.Brokers.StorageBroker;
 using Authentication.Web.Api.Brokers.UserManagament;
 using Authentication.Web.Api.Models.Users;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Authentication.Web.Api.Services.Foundations.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace Authentication.Web.Api
@@ -26,6 +23,36 @@ namespace Authentication.Web.Api
         public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration) =>
             Configuration = configuration;
+
+        public static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllers();
+            services.AddLogging();
+            services.AddDbContext<StorageBroker>();
+            AddBrokers(services);
+            AddFoundationServices(services);
+            services.AddDataProtection();
+
+            services.AddIdentityCore<User>()
+                .AddRoles<Role>()
+                .AddEntityFrameworkStores<StorageBroker>()
+                .AddDefaultTokenProviders();
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc(
+                    name: "v1",
+                    info: new OpenApiInfo
+                    {
+                        Title = "Authentication.Web.Api",
+                        Version = "v1",
+                    }
+                    );
+            });
+
+            services.AddAuthentication();
+            services.AddAuthorization();
+        }
 
         public static void Configure(
             IApplicationBuilder applicationBuilder, 
@@ -49,58 +76,17 @@ namespace Authentication.Web.Api
             applicationBuilder.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 
-        public static void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllers();
-            services.AddLogging();
-            services.AddDbContext<StorageBroker>();
-            AddBrokers(services);
-            services.AddDataProtection();
-
-            services.AddIdentityCore<User>()
-                .AddRoles<Role>()
-                .AddEntityFrameworkStores<StorageBroker>()
-                .AddDefaultTokenProviders();
-
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc(
-                    name: "v1",
-                    info: new OpenApiInfo
-                    {
-                        Title = "Authentication.Web.Api",
-                        Version = "v1",
-                    }
-                    );
-            });
-
-            //services
-            //    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //    .AddJwtBearer(options =>
-            //    {
-            //        options.TokenValidationParameters = new TokenValidationParameters()
-            //        {
-            //            ClockSkew = TimeSpan.Zero,
-            //            ValidateIssuer = true,
-            //            ValidateAudience = true,
-            //            ValidateLifetime = true,
-            //            ValidateIssuerSigningKey = true,
-            //            ValidIssuer = "apiWithAuthBackend",
-            //            ValidAudience = "apiWithAuthBackend",
-            //            IssuerSigningKey = new SymmetricSecurityKey(
-            //                Encoding.UTF8.GetBytes("!SomethingSecret!"))
-            //        };
-            //    });
-        }
-
         private static void AddBrokers(IServiceCollection services)
         {
             services.AddScoped<IUserManagementBroker, UserManagementBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddScoped<IStorageBroker, StorageBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
         }
 
-
+        private static void AddFoundationServices(IServiceCollection services)
+        {
+            services.AddTransient<IUserService, UserService>();
+        }
     }
 }
